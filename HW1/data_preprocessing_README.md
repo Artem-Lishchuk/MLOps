@@ -19,6 +19,8 @@ Preprocessing pipeline.
 
 4. **Drop auxiliary columns** — Remove `lpep_pickup_datetime` and `tip_amount` after feature extraction.
 
+5. **Outlier removal** — Filter `trip_distance` to the 99th percentile to reduce impact of extreme outliers.
+
 ## Architecture
 
 load_data → drop_columns → filter_rows → add_features → drop_auxiliary_columns
