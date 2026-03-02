@@ -1,6 +1,7 @@
 import pandas as pd
 from pathlib import Path
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 COLUMNS_TO_DROP = [
     "VendorID",
@@ -94,3 +95,22 @@ def preprocess(data: pd.DataFrame) -> pd.DataFrame:
 def load_and_process(filepath: str | Path, engine: str = "fastparquet") -> pd.DataFrame:
     data = load_data(filepath, engine=engine)
     return preprocess(data)
+
+
+def train_val_test_split(
+    data: pd.DataFrame,
+    train_ratio: float = 0.7,
+    val_ratio: float = 0.15,
+    test_ratio: float = 0.15,
+    random_state: int | None = None,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    assert abs(train_ratio + val_ratio + test_ratio - 1.0) < 1e-9, "Ratios must sum to 1"
+    indices = np.arange(len(data))
+    idx_train, idx_temp = train_test_split(
+        indices, train_size=train_ratio, random_state=random_state
+    )
+    val_size = val_ratio / (val_ratio + test_ratio)
+    idx_val, idx_test = train_test_split(
+        idx_temp, train_size=val_size, random_state=random_state
+    )
+    return data.iloc[idx_train], data.iloc[idx_val], data.iloc[idx_test]
