@@ -1,5 +1,6 @@
 import pandas as pd
 from pathlib import Path
+import numpy as np
 
 COLUMNS_TO_DROP = [
     "VendorID",
@@ -65,6 +66,10 @@ def filter_rows(data: pd.DataFrame) -> pd.DataFrame:
     data = remove_tip_amount_non_positive(data)
     return data
 
+def drop_tip_applied(data: pd.DataFrame) -> pd.DataFrame:
+    if "tip_applied" in data.columns:
+        return data.drop(columns=["tip_applied"])
+    return data
 
 def add_features(data: pd.DataFrame) -> pd.DataFrame:
     data = data.copy()
@@ -73,12 +78,16 @@ def add_features(data: pd.DataFrame) -> pd.DataFrame:
     data["tip_applied"] = (data["tip_amount"] > 0).astype(int)
     return data
 
+def leave_99th_percentile(data: pd.DataFrame, column: str) -> pd.DataFrame:
+    return data[data[column] <= np.percentile(data[column], 99)]
+
 def preprocess(data: pd.DataFrame) -> pd.DataFrame:
     data = drop_columns(data)
     data = filter_rows(data)
     data = add_features(data)
     data = drop_lpep_pickup_datetime(data)
     data = drop_tip_amount(data)
+    data = leave_99th_percentile(data, "trip_distance")
     return data
 
 
