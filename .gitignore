@@ -4,3 +4,5 @@ HW1/dataset/*
 *.pdf
 
 *.zip
+
+.cursor/
