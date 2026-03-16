@@ -6,3 +6,4 @@ scikit-learn
 fastparquet
 ipykernel
 dvc
+dvc-gdrive
