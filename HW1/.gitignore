@@ -2,3 +2,4 @@ venv/
 dataset/
 .pdf
 __pycache__/
+/dataset

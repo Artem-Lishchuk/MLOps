@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 import numpy as np
 from sklearn.model_selection import train_test_split
+import dvc.api
 
 COLUMNS_TO_DROP = [
     "VendorID",
@@ -22,9 +23,19 @@ COLUMNS_TO_DROP = [
 ]
 
 
-def load_data(filepath: str | Path, engine: str = "fastparquet") -> pd.DataFrame:
+def load_data_from_path(filepath: str | Path, engine: str = "fastparquet") -> pd.DataFrame:
     return pd.read_parquet(filepath, engine=engine)
 
+def load_data_from_dvc(dvc_path: str, engine: str = "fastparquet", repo: str | Path | None = None) -> pd.DataFrame:
+    import os
+    orig_cwd = os.getcwd()
+    try:
+        if repo is not None:
+            os.chdir(Path(repo).resolve())
+        with dvc.api.open(dvc_path, mode="rb") as f:
+            return pd.read_parquet(f, engine=engine)
+    finally:
+        os.chdir(orig_cwd)
 
 def drop_columns(data: pd.DataFrame) -> pd.DataFrame:
     cols_present = [c for c in COLUMNS_TO_DROP if c in data.columns]
@@ -92,8 +103,12 @@ def preprocess(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
-def load_and_process(filepath: str | Path, engine: str = "fastparquet") -> pd.DataFrame:
-    data = load_data(filepath, engine=engine)
+def load_and_process(filepath: str | Path, engine: str = "fastparquet", from_dvc: bool = False,repo: str | Path | None = None,
+) -> pd.DataFrame:
+    if from_dvc:
+        data = load_data_from_dvc(str(filepath), engine=engine, repo=repo)
+    else:
+        data = load_data_from_path(filepath, engine=engine)
     return preprocess(data)
 
 
