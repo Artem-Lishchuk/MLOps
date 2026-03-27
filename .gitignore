@@ -6,3 +6,5 @@ HW1/dataset/*
 *.zip
 
 .cursor/
+
+*..png
