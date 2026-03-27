@@ -1,0 +1,182 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/data_ingestion.py
+    deps:
+    - path: ../data/green_tripdata_2021-01.parquet
+      hash: md5
+      md5: 58f7622b863151fc9f4d51eff826db50
+      size: 1333519
+    - path: ../data/green_tripdata_2021-02.parquet
+      hash: md5
+      md5: 37305f2db8bd9ae2553212bba9e2b0b5
+      size: 1145679
+    - path: params.yaml
+      hash: md5
+      md5: 3cf85a0563b06f4060b580531ac7c573
+      size: 863
+    - path: src/data_ingestion.py
+      hash: md5
+      md5: b60e287e3696262a9089ffe8e1504532
+      size: 3022
+    params:
+      params.yaml:
+        data:
+          raw_files:
+          - ../data/green_tripdata_2021-01.parquet
+          - ../data/green_tripdata_2021-02.parquet
+          engine: pyarrow
+          interim_output: data/interim/combined.parquet
+    outs:
+    - path: data/interim
+      hash: md5
+      md5: 0a1aabf1d43f9e530a41184ac756cd84.dir
+      size: 238765
+      nfiles: 1
+  feature_engineering:
+    cmd: python src/feature_engineering.py
+    deps:
+    - path: data/interim
+      hash: md5
+      md5: 0a1aabf1d43f9e530a41184ac756cd84.dir
+      size: 238765
+      nfiles: 1
+    - path: params.yaml
+      hash: md5
+      md5: 3cf85a0563b06f4060b580531ac7c573
+      size: 863
+    - path: src/feature_engineering.py
+      hash: md5
+      md5: 37ec89f5317e6dbc33baa1027fc222cd
+      size: 1985
+    params:
+      params.yaml:
+        data:
+          raw_files:
+          - ../data/green_tripdata_2021-01.parquet
+          - ../data/green_tripdata_2021-02.parquet
+          engine: pyarrow
+          interim_output: data/interim/combined.parquet
+        split:
+          random_state: 113
+          train_ratio: 0.7
+          val_ratio: 0.15
+          test_ratio: 0.15
+          processed_dir: data/processed
+          train_file: train.parquet
+          val_file: val.parquet
+          test_file: test.parquet
+    outs:
+    - path: data/processed
+      hash: md5
+      md5: 9be9c43b2c86194cd5f9b9e61094d594.dir
+      size: 311235
+      nfiles: 3
+  model_building:
+    cmd: python src/train.py
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: 9be9c43b2c86194cd5f9b9e61094d594.dir
+      size: 311235
+      nfiles: 3
+    - path: params.yaml
+      hash: md5
+      md5: 3cf85a0563b06f4060b580531ac7c573
+      size: 863
+    - path: src/train.py
+      hash: md5
+      md5: 39079da98e55a518427f70689e70b0d0
+      size: 1319
+    params:
+      params.yaml:
+        data:
+          raw_files:
+          - ../data/green_tripdata_2021-01.parquet
+          - ../data/green_tripdata_2021-02.parquet
+          engine: pyarrow
+          interim_output: data/interim/combined.parquet
+        features:
+          feature_columns:
+          - passenger_count
+          - trip_distance
+          - pickup_hour
+          - pickup_day_of_week
+          - fare_amount
+          target_column: tip_applied
+        model:
+          n_estimators: 300
+          max_depth: 3
+          random_state: 42
+          model_output: models/model.pkl
+        split:
+          random_state: 113
+          train_ratio: 0.7
+          val_ratio: 0.15
+          test_ratio: 0.15
+          processed_dir: data/processed
+          train_file: train.parquet
+          val_file: val.parquet
+          test_file: test.parquet
+    outs:
+    - path: models/model.pkl
+      hash: md5
+      md5: 596831807c9c0e50e1b823772fa475d9
+      size: 452136
+  evaluation:
+    cmd: python src/evaluate.py
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: 9be9c43b2c86194cd5f9b9e61094d594.dir
+      size: 311235
+      nfiles: 3
+    - path: models/model.pkl
+      hash: md5
+      md5: 596831807c9c0e50e1b823772fa475d9
+      size: 452136
+    - path: params.yaml
+      hash: md5
+      md5: 3cf85a0563b06f4060b580531ac7c573
+      size: 863
+    - path: src/evaluate.py
+      hash: md5
+      md5: c35609fad3469f9d91b50d3d9e50f465
+      size: 1708
+    params:
+      params.yaml:
+        data:
+          raw_files:
+          - ../data/green_tripdata_2021-01.parquet
+          - ../data/green_tripdata_2021-02.parquet
+          engine: pyarrow
+          interim_output: data/interim/combined.parquet
+        evaluate:
+          metrics_output: reports/metrics.json
+        features:
+          feature_columns:
+          - passenger_count
+          - trip_distance
+          - pickup_hour
+          - pickup_day_of_week
+          - fare_amount
+          target_column: tip_applied
+        model:
+          n_estimators: 300
+          max_depth: 3
+          random_state: 42
+          model_output: models/model.pkl
+        split:
+          random_state: 113
+          train_ratio: 0.7
+          val_ratio: 0.15
+          test_ratio: 0.15
+          processed_dir: data/processed
+          train_file: train.parquet
+          val_file: val.parquet
+          test_file: test.parquet
+    outs:
+    - path: reports/metrics.json
+      hash: md5
+      md5: 653ebca7df4ce4bd31480c01b0e8bb2f
+      size: 246
