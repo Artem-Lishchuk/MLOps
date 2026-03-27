@@ -1,0 +1,37 @@
+# Derived from classificationModel.ipynb — paths relative to HW3/ when running the pipeline
+
+data:
+  raw_files:
+    - ../data/green_tripdata_2021-01.parquet
+    - ../data/green_tripdata_2021-02.parquet
+  engine: pyarrow
+  interim_output: data/interim/combined.parquet
+
+split:
+  random_state: 113
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+  processed_dir: data/processed
+  train_file: train.parquet
+  val_file: val.parquet
+  test_file: test.parquet
+
+features:
+  feature_columns:
+    - passenger_count
+    - trip_distance
+    - pickup_hour
+    - pickup_day_of_week
+    - fare_amount
+  target_column: tip_applied
+
+model:
+  # RandomForestClassifier — sklearn parameter names
+  n_estimators: 300
+  max_depth: 3
+  random_state: 42
+  model_output: models/model.pkl
+
+evaluate:
+  metrics_output: reports/metrics.json

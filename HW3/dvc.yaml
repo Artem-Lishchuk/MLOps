@@ -1,0 +1,58 @@
+stages:
+  data_ingestion:
+    cmd: python src/data_ingestion.py
+    params:
+      - params.yaml:
+          - data
+    deps:
+      - src/data_ingestion.py
+      - params.yaml
+      - ../data/green_tripdata_2021-01.parquet
+      - ../data/green_tripdata_2021-02.parquet
+    outs:
+      - data/interim
+
+  feature_engineering:
+    cmd: python src/feature_engineering.py
+    params:
+      - params.yaml:
+          - data
+          - split
+    deps:
+      - src/feature_engineering.py
+      - params.yaml
+      - data/interim
+    outs:
+      - data/processed
+
+  model_building:
+    cmd: python src/train.py
+    params:
+      - params.yaml:
+          - data
+          - split
+          - features
+          - model
+    deps:
+      - src/train.py
+      - params.yaml
+      - data/processed
+    outs:
+      - models/model.pkl
+
+  evaluation:
+    cmd: python src/evaluate.py
+    params:
+      - params.yaml:
+          - data
+          - split
+          - features
+          - model
+          - evaluate
+    deps:
+      - src/evaluate.py
+      - params.yaml
+      - models/model.pkl
+      - data/processed
+    metrics:
+      - reports/metrics.json
