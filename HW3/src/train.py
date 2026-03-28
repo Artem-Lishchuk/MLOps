@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pickle
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -35,10 +36,21 @@ def main() -> None:
     model = RandomForestClassifier(**clf_params)
     model.fit(X_train, y_train)
 
-    model_path = hw3_dir / model_cfg["model_output"]
+    # Use timestamp to avoid overwriting
+    timestamp = int(time.time())
+    model_filename = f"model_{timestamp}.pkl"
+    model_path = hw3_dir / "models" / model_filename
     model_path.parent.mkdir(parents=True, exist_ok=True)
+    
     with open(model_path, "wb") as f:
         pickle.dump(model, f)
+    
+    # Also update a symlink or a 'latest' file for the evaluation stage
+    latest_path = hw3_dir / model_cfg["model_output"]
+    with open(latest_path, "wb") as f:
+        pickle.dump(model, f)
+    
+    print(f"Model saved to {model_path} and {latest_path}")
 
 
 if __name__ == "__main__":
