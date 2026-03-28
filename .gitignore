@@ -7,7 +7,6 @@ HW1/dataset/*
 
 .cursor/
 **/mlflow.db
-*.png
 
 **/mlruns/
 
