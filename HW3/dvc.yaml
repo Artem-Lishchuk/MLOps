@@ -38,7 +38,7 @@ stages:
       - params.yaml
       - data/processed
     outs:
-      - models/model.pkl
+      - models
 
   evaluation:
     cmd: python src/evaluate.py
@@ -52,7 +52,7 @@ stages:
     deps:
       - src/evaluate.py
       - params.yaml
-      - models/model.pkl
+      - models
       - data/processed
     metrics:
       - reports/metrics.json

@@ -28,8 +28,8 @@ features:
 
 model:
   # RandomForestClassifier — sklearn parameter names
-  n_estimators: 300
-  max_depth: 3
+  n_estimators: 1000
+  max_depth: 2
   random_state: 42
   model_output: models/model.pkl
 

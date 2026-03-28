@@ -13,8 +13,8 @@ stages:
       size: 1145679
     - path: params.yaml
       hash: md5
-      md5: 3cf85a0563b06f4060b580531ac7c573
-      size: 863
+      md5: 6138d755d39c94b2c2bcb38cd804e4d0
+      size: 864
     - path: src/data_ingestion.py
       hash: md5
       md5: b60e287e3696262a9089ffe8e1504532
@@ -43,8 +43,8 @@ stages:
       nfiles: 1
     - path: params.yaml
       hash: md5
-      md5: 3cf85a0563b06f4060b580531ac7c573
-      size: 863
+      md5: 6138d755d39c94b2c2bcb38cd804e4d0
+      size: 864
     - path: src/feature_engineering.py
       hash: md5
       md5: 37ec89f5317e6dbc33baa1027fc222cd
@@ -82,12 +82,12 @@ stages:
       nfiles: 3
     - path: params.yaml
       hash: md5
-      md5: 3cf85a0563b06f4060b580531ac7c573
-      size: 863
+      md5: 6138d755d39c94b2c2bcb38cd804e4d0
+      size: 864
     - path: src/train.py
       hash: md5
-      md5: 39079da98e55a518427f70689e70b0d0
-      size: 1319
+      md5: e69ff45409fe7a1694bf3aaf429cf3c6
+      size: 1733
     params:
       params.yaml:
         data:
@@ -105,8 +105,8 @@ stages:
           - fare_amount
           target_column: tip_applied
         model:
-          n_estimators: 300
-          max_depth: 3
+          n_estimators: 1000
+          max_depth: 2
           random_state: 42
           model_output: models/model.pkl
         split:
@@ -119,10 +119,11 @@ stages:
           val_file: val.parquet
           test_file: test.parquet
     outs:
-    - path: models/model.pkl
+    - path: models
       hash: md5
-      md5: 596831807c9c0e50e1b823772fa475d9
-      size: 452136
+      md5: d69b9cfe1617f7b6f416d96dd6bbfa37.dir
+      size: 1727198
+      nfiles: 2
   evaluation:
     cmd: python src/evaluate.py
     deps:
@@ -131,18 +132,19 @@ stages:
       md5: 9be9c43b2c86194cd5f9b9e61094d594.dir
       size: 311235
       nfiles: 3
-    - path: models/model.pkl
+    - path: models
       hash: md5
-      md5: 596831807c9c0e50e1b823772fa475d9
-      size: 452136
+      md5: d69b9cfe1617f7b6f416d96dd6bbfa37.dir
+      size: 1727198
+      nfiles: 2
     - path: params.yaml
       hash: md5
-      md5: 3cf85a0563b06f4060b580531ac7c573
-      size: 863
+      md5: 6138d755d39c94b2c2bcb38cd804e4d0
+      size: 864
     - path: src/evaluate.py
       hash: md5
-      md5: c35609fad3469f9d91b50d3d9e50f465
-      size: 1708
+      md5: c9ec52296ada6cd45cc0df4638309137
+      size: 2481
     params:
       params.yaml:
         data:
@@ -162,8 +164,8 @@ stages:
           - fare_amount
           target_column: tip_applied
         model:
-          n_estimators: 300
-          max_depth: 3
+          n_estimators: 1000
+          max_depth: 2
           random_state: 42
           model_output: models/model.pkl
         split:
@@ -178,5 +180,5 @@ stages:
     outs:
     - path: reports/metrics.json
       hash: md5
-      md5: 653ebca7df4ce4bd31480c01b0e8bb2f
-      size: 246
+      md5: 20d00c02bb74d72232d7439cf30814ea
+      size: 443
