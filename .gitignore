@@ -2,8 +2,11 @@ venv/
 HW1/dataset/*
 
 *.pdf
-
+**/__pycache__/
 *.zip
 
 .cursor/
+**/mlflow.db
+
+**/mlruns/
 
